@@ -6,18 +6,22 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // Déplacement de la caméra
-camera.position.z = 4;
-camera.position.y = 0;
-camera.position.x = 5;
+// Déplacement de la caméra derrière le paddle 1 (pour voir le paddle 2 de dos)
+camera.position.set(0,0,6); // Ajustez la position sur le côté et la profondeur
+// const cameraLookAt = new THREE.Vector3(0, 0, 0); // Point de vue de la caméra
 
+// Déplacement de la caméra initiale
+// camera.position.copy(cameraPosition);
+// camera.lookAt(cameraLookAt);
+camera.rotation.set(0, 0, Math.PI / 2); 
 // Créer les paddlesFFFF00
 const paddleGeometry = new THREE.BoxGeometry(0.2, 0.8, 0.2);
 const paddleMaterial = new THREE.MeshBasicMaterial({ color: 0x00ffff });
 const paddleMaterial2 = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 const paddle1 = new THREE.Mesh(paddleGeometry, paddleMaterial);
 const paddle2 = new THREE.Mesh(paddleGeometry, paddleMaterial2);
-paddle1.position.set(-4.5, 0, 0);
-paddle2.position.set(4.5, 0, 0);
+paddle1.position.set(-4, 0, 0);
+paddle2.position.set(4, 0, 0);
 scene.add(paddle1);
 scene.add(paddle2);
 
@@ -28,7 +32,7 @@ const ball = new THREE.Mesh(ballGeometry, ballMaterial);
 scene.add(ball);
 
 // Créer les murs
-const wallGeometry = new THREE.BoxGeometry(10, 0.2, 0.2);
+const wallGeometry = new THREE.BoxGeometry(8, 0.2, 0.2);
 const wallMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
 const topWall = new THREE.Mesh(wallGeometry, wallMaterial);
 const bottomWall = new THREE.Mesh(wallGeometry, wallMaterial);

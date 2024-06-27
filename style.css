@@ -1,0 +1,67 @@
+#zoneProposition span{
+	font-weight:bold;
+}
+.container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 20px;
+	background-color: #C6DBDA;
+	border: 2px solid black; /* Ajouter un contour */
+	box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3); /* Ajouter une ombre portée */
+	
+}
+.container2 {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 20px;
+	flex-direction: column;
+	background-color: green;
+	box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3); /* Ajouter une ombre portée */
+	text-align: center; /* Centrer le texte horizontalement */
+	max-width: 80%; /* Limiter la largeur maximale du conteneur */
+	width: auto; /* Ajuster la largeur automatiquement */
+	margin: 20px auto; /* Centrer horizontalement et ajouter un espace en haut et en bas */
+	border-radius: 30px;
+}
+
+.text {
+	max-width: 100%; /* S'assurer que le texte peut s'adapter à la largeur du conteneur */
+}
+
+.styled-h1 {
+	background-color: #fee1e8;
+	padding: 20px;
+	font-family: Arial, sans-serif;
+	border: 2px solid black; /* Ajouter un contour */
+	box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3); /* Ajouter une ombre portée */
+}
+
+.center-text {
+	text-align: center;
+	font-family: Arial, sans-serif;
+	padding: 20px;
+}
+
+
+if (child.isMesh && child.name === 'Plane003_3') {
+	// Réinitialiser les propriétés d'émission du matériau spécifique
+	// child.material.emissive = new THREE.Color(0x000000); // Noir pour désactiver l'émission
+	child.material.emissiveIntensity = 5; // Aucune intensité d'émission
+	child.material.toneMapped = false; // Aucune intensité d'émission
+}
+gltf.scene.traverse(function (child) {
+if (child.isLight) {
+	// Si l'objet est une lumière, ajustez ses propriétés
+	if (child instanceof THREE.DirectionalLight) {
+		child.intensity = 0.5; // Exemple: Réduire l'intensité d'une lumière directionnelle
+	} else if (child instanceof THREE.PointLight) {
+		child.intensity = 0.3; // Exemple: Réduire l'intensité d'une lumière ponctuelle
+	}
+
+	if (child instanceof THREE.AmbientLight) {
+		// Si l'objet est une lumière ambiante, ajustez ses propriétés
+		child.intensity = 0.7; // Exemple: Réduire l'intensité de la lumière ambiante
+	}
+}

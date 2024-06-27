@@ -97,10 +97,11 @@ function onMouseMove(event) {
             // Autres ajustements de surbrillance si nécessaire
             highlightedObject = objectToHighlight;
         }
-    }else
-    {
-        document.body.style.cursor = 'default';
-    }
+        else if(!highlightedObject)
+        {
+            document.body.style.cursor = 'default';
+        }
+     }
 }
 
 function animate() {

@@ -63,6 +63,8 @@ function init() {
     animate();
 }
 
+var highlightedObject = null;
+
 function onMouseMove(event) {
     // Mettre à jour la position du pointeur de la souris
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -74,21 +76,33 @@ function onMouseMove(event) {
     // Trouver les intersections avec les objets de la scène
     var intersects = raycaster.intersectObjects(scene.children, true);
 
-    // Mettre en surbrillance l'objet spécifique
-	console.log(intersects)
-    if (intersects.length > 0) {
-        var selectedObject = intersects.find(function (intersect) {
-            return intersect.object.name === 'machine';
-        });
+    // Réinitialiser l'objet surligné précédent
+    if (highlightedObject) {
+        highlightedObject.material.emissiveIntensity = 1; // Réinitialiser l'intensité d'émission
+        highlightedObject = null;
+        
+    }
 
+    // Mettre en surbrillance l'objet spécifique
+    console.log(intersects);
+    if (intersects.length > 0) {
+        document.body.style.cursor = 'pointer';
+        var selectedObject = intersects.find(function (intersect) {
+            return intersect.object.name === 'Plane003_2';
+        });
+        
         if (selectedObject) {
             var objectToHighlight = selectedObject.object;
-            objectToHighlight.material.emissiveIntensity = 1000; // Exemple: intensité d'émission pour la surbrillance
+            objectToHighlight.material.emissiveIntensity = 100; // Exemple: intensité d'émission pour la surbrillance
             // Autres ajustements de surbrillance si nécessaire
             highlightedObject = objectToHighlight;
         }
+    }else
+    {
+        document.body.style.cursor = 'default';
     }
 }
+
 function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);

@@ -5,23 +5,24 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Déplacement de la caméra
-// Déplacement de la caméra derrière le paddle 1 (pour voir le paddle 2 de dos)
-camera.position.set(0,0,6); // Ajustez la position sur le côté et la profondeur
-// const cameraLookAt = new THREE.Vector3(0, 0, 0); // Point de vue de la caméra
+// Initialisation des contrôles d'orbite
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; // Ajoute un effet de damping (inertie)
+controls.dampingFactor = 0.25; // Facteur de damping
+controls.screenSpacePanning = false; // Déplace uniquement la caméra en orbite
+controls.minDistance = 5; // Distance minimale de zoom
+controls.maxDistance = 100; // Distance maximale de zoom
 
-// Déplacement de la caméra initiale
-// camera.position.copy(cameraPosition);
-// camera.lookAt(cameraLookAt);
-camera.rotation.set(0, 0, Math.PI / 2); 
-// Créer les paddlesFFFF00
-const paddleGeometry = new THREE.BoxGeometry(0.2, 0.8, 0.2);
+camera.position.set(-1, 7, -1); // Ajustez la position sur le côté et la profondeur
+controls.update(); // Met à jour les contrôles après avoir défini la position de la caméra
+
+const paddleGeometry = new THREE.BoxGeometry(0.8, 0.2, 0.2); // Modifier la géométrie des paddles pour les rendre horizontaux
 const paddleMaterial = new THREE.MeshBasicMaterial({ color: 0x00ffff });
 const paddleMaterial2 = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 const paddle1 = new THREE.Mesh(paddleGeometry, paddleMaterial);
 const paddle2 = new THREE.Mesh(paddleGeometry, paddleMaterial2);
-paddle1.position.set(-4, 0, 0);
-paddle2.position.set(4, 0, 0);
+paddle1.position.set(0, 3.5, 0); // Positionner paddle1 en haut
+paddle2.position.set(0, -3.5, 0); // Positionner paddle2 en bas
 scene.add(paddle1);
 scene.add(paddle2);
 
@@ -32,14 +33,14 @@ const ball = new THREE.Mesh(ballGeometry, ballMaterial);
 scene.add(ball);
 
 // Créer les murs
-const wallGeometry = new THREE.BoxGeometry(8, 0.2, 0.2);
+const wallGeometry = new THREE.BoxGeometry(0.2, 7, 0.2); // Modifier la géométrie des murs pour les rendre verticaux
 const wallMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-const topWall = new THREE.Mesh(wallGeometry, wallMaterial);
-const bottomWall = new THREE.Mesh(wallGeometry, wallMaterial);
-topWall.position.y = 3;
-bottomWall.position.y = -3;
-scene.add(topWall);
-scene.add(bottomWall);
+const leftWall = new THREE.Mesh(wallGeometry, wallMaterial);
+const rightWall = new THREE.Mesh(wallGeometry, wallMaterial);
+leftWall.position.x = -2.5; // Positionner le mur gauche plus près du centre
+rightWall.position.x = 2.5; // Positionner le mur droit plus près du centre
+scene.add(leftWall);
+scene.add(rightWall);
 
 // Variables pour la vitesse de la balle
 let ballSpeedX = 0.1;
@@ -47,7 +48,7 @@ let ballSpeedY = 0.1;
 
 // Variables pour les paddles
 const paddleSpeed = 0.05; // Vitesse ajustée pour des mouvements plus fluides
-const paddleLimitY = 2.5; // Limite verticale pour les paddles
+const paddleLimitX = 2.3; // Limite horizontale pour les paddles
 
 // Variables pour le score
 let score1 = 0;
@@ -71,21 +72,22 @@ function animate() {
     requestAnimationFrame(animate);
     
     // Déplacement de la balle
+	console.log('Position de la caméra :', camera.position);
     ball.position.x += ballSpeedX;
     ball.position.y += ballSpeedY;
 
     // Collision de la balle avec les murs
-    if (ball.position.y >= 2.9 || ball.position.y <= -2.9) {
-        ballSpeedY = -ballSpeedY;
+    if (ball.position.x >= 2.4 || ball.position.x <= -2.4) {
+        ballSpeedX = -ballSpeedX;
     }
 
     // Balle derrière les paddles - points marqués
-    if (ball.position.x <= -5 || ball.position.x >= 5) {
-        if (ball.position.y <= -2.7) {
+    if (ball.position.y <= -4 || ball.position.y >= 4) {
+        if (ball.position.y <= -4) {
             score2++;
             updateScore();
             resetBall();
-        } else if (ball.position.y >= 2.7) {
+        } else if (ball.position.y >= 4) {
             score1++;
             updateScore();
             resetBall();
@@ -93,13 +95,13 @@ function animate() {
     }
 
     // Collision de la balle avec les paddles
-    if (ball.position.y <= paddle1.position.y + 0.4 && ball.position.y >= paddle1.position.y - 0.4 && ball.position.x <= paddle1.position.x + 0.1 && ball.position.x >= paddle1.position.x - 0.1) {
-        ballSpeedX = -ballSpeedX;
-        ball.position.x = paddle1.position.x + 0.1; // Repositionner la balle à la surface du paddle
+    if (ball.position.y >= paddle1.position.y - 0.1 && ball.position.y <= paddle1.position.y + 0.1 && ball.position.x >= paddle1.position.x - 0.4 && ball.position.x <= paddle1.position.x + 0.4) {
+        ballSpeedY = -ballSpeedY;
+        ball.position.y = paddle1.position.y - 0.1; // Repositionner la balle à la surface du paddle
     }
-    if (ball.position.y <= paddle2.position.y + 0.4 && ball.position.y >= paddle2.position.y - 0.4 && ball.position.x <= paddle2.position.x + 0.1 && ball.position.x >= paddle2.position.x - 0.1) {
-        ballSpeedX = -ballSpeedX;
-        ball.position.x = paddle2.position.x - 0.1; // Repositionner la balle à la surface du paddle
+    if (ball.position.y >= paddle2.position.y - 0.1 && ball.position.y <= paddle2.position.y + 0.1 && ball.position.x >= paddle2.position.x - 0.4 && ball.position.x <= paddle2.position.x + 0.4) {
+        ballSpeedY = -ballSpeedY;
+        ball.position.y = paddle2.position.y + 0.1; // Repositionner la balle à la surface du paddle
     }
 
     // Vérifier si un joueur a gagné (ex: atteint 10 points)
@@ -110,6 +112,7 @@ function animate() {
         updateScore();
     }
 
+    controls.update(); // Met à jour les contrôles à chaque frame
     // Rendu de la scène
     renderer.render(scene, camera);
 }
@@ -134,17 +137,17 @@ document.addEventListener('keyup', function (e) {
 
 // Boucle de mise à jour des paddles
 function updatePaddles() {
-    if ('ArrowUp' in keys && paddle1.position.y < paddleLimitY) {
-        paddle1.position.y += paddleSpeed;
+    if ('ArrowLeft' in keys && paddle1.position.x > -paddleLimitX) {
+        paddle1.position.x -= paddleSpeed;
     }
-    if ('ArrowDown' in keys && paddle1.position.y > -paddleLimitY) {
-        paddle1.position.y -= paddleSpeed;
+    if ('ArrowRight' in keys && paddle1.position.x < paddleLimitX) {
+        paddle1.position.x += paddleSpeed;
     }
-    if ('w' in keys && paddle2.position.y < paddleLimitY) {
-        paddle2.position.y += paddleSpeed;
+    if ('a' in keys && paddle2.position.x > -paddleLimitX) {
+        paddle2.position.x -= paddleSpeed;
     }
-    if ('s' in keys && paddle2.position.y > -paddleLimitY) {
-        paddle2.position.y -= paddleSpeed;
+    if ('d' in keys && paddle2.position.x < paddleLimitX) {
+        paddle2.position.x += paddleSpeed;
     }
 
     // Demander à être rappelé avant le prochain rafraîchissement
